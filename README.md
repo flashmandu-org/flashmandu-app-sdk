@@ -1,9 +1,7 @@
 # Flashmandu App SDK
 
 The public SDK for building **apps/plugins** that extend a Flashmandu storefront
-platform. Third-party developers code against **this package only** — they never
-receive the platform's core source (payments, billing, models). That secrecy is
-by construction: the SDK exposes contracts; the platform keeps its implementation.
+platform. The SDK exposes contracts; the platform keeps its implementation.
 
 > This package is intentionally dependency-light (PHP 8.2+, contracts only) so it
 > is fully standalone and independently versionable.
