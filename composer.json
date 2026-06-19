@@ -1,0 +1,15 @@
+{
+    "name": "flashmandu/app-sdk",
+    "description": "Public SDK and contracts for Flashmandu app/plugin developers.",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Flashmandu\\AppSdk\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
