@@ -75,6 +75,35 @@ All optional except `id`/`name`/`version`:
   emits via `Hooks::emit()`.
 - Filters: pipe a value through apps, e.g. `cart.totals`.
 
+## Test your app locally (no platform needed)
+
+Verify your app reacts correctly **before** publishing — no platform, database,
+or server required. `Flashmandu\AppSdk\Testing\AppTester` is an in-memory harness
+that collects your app's hook declarations and lets you install, emit, and pipe
+filters in your own Pest/PHPUnit suite:
+
+```php
+use Flashmandu\AppSdk\Testing\AppTester;
+
+it('awards points when an order is paid', function (): void {
+    $tester = AppTester::for(Acme\Loyalty\Manifest::class);
+
+    $tester->install()->emit('order.status.changed', ['status' => 'paid']);
+
+    expect($tester->wasFired('order.status.changed'))->toBeTrue();
+    // assert your app's side effect (DB row, API call, etc.)
+});
+
+it('applies a redemption to cart totals', function (): void {
+    $tester = AppTester::for(Acme\Loyalty\Manifest::class)->install();
+
+    expect($tester->runFilter('cart.totals', 100))->toBe(90);
+});
+```
+
+The harness mirrors the platform's gating: nothing fires before `install()`, so
+tests reflect how the real engine only runs apps a merchant has installed.
+
 ## Versioning
 
 This package is the **stable contract** between apps and the platform. Breaking
