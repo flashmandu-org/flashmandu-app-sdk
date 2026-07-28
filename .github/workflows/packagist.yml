@@ -13,6 +13,7 @@ name: Packagist
 # Either way the package stays current without a manual "Update" click.
 
 on:
+  workflow_dispatch:
   push:
     branches: [master]
     tags: ['v*']
