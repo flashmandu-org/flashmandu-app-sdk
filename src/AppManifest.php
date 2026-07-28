@@ -4,6 +4,7 @@ namespace Flashmandu\AppSdk;
 
 use Flashmandu\AppSdk\Admin\AdminUI;
 use Flashmandu\AppSdk\Extensions\Extensions;
+use Flashmandu\AppSdk\Settings\SettingsSchema;
 use Flashmandu\AppSdk\Storefront\Storefront;
 
 /**
@@ -14,6 +15,7 @@ final readonly class AppManifest
     /**
      * @param  array<int, Scope>  $scopes  scopes the app requests at install
      * @param  Extensions|null  $extensions  optional extension-surface contributions
+     * @param  SettingsSchema|null  $settingsSchema  optional declarative settings the host auto-renders as a form
      */
     public function __construct(
         public string $id,
@@ -24,5 +26,6 @@ final readonly class AppManifest
         public ?AdminUI $admin = null,
         public ?Storefront $storefront = null,
         public ?Extensions $extensions = null,
+        public ?SettingsSchema $settingsSchema = null,
     ) {}
 }
