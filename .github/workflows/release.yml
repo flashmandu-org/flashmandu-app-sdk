@@ -1,7 +1,7 @@
 name: Release
 
-# Fires when a version tag (vX.Y.Z) is pushed. Creates a GitHub release and
-# notifies Packagist so the new version is published automatically.
+# Fires when a version tag (vX.Y.Z) is pushed. Runs tests and creates the
+# GitHub release. Packagist publishing is handled by packagist.yml.
 on:
   push:
     tags:
@@ -31,18 +31,3 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create "${GITHUB_REF_NAME}" --generate-notes --verify-tag
-
-      - name: Notify Packagist
-        env:
-          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
-          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
-        run: |
-          if [ -z "${PACKAGIST_TOKEN}" ]; then
-            echo "PACKAGIST_TOKEN secret not set — skipping API notify."
-            echo "Install the Packagist GitHub hook/app instead, or add the secrets."
-            exit 0
-          fi
-          curl -sf -XPOST -H 'content-type:application/json' \
-            "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_TOKEN}" \
-            -d '{"repository":{"url":"https://github.com/flashmandu-org/flashmandu-app-sdk"}}'
-          echo "Notified Packagist."

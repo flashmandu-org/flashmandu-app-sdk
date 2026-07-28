@@ -1,0 +1,46 @@
+name: Packagist
+
+# Auto-publishes every push to Packagist so both dev-master (branch) and tagged
+# releases are kept in sync. Two supported paths:
+#
+#   1. Preferred (no secrets): enable Packagist's native GitHub hook on this
+#      repo (packagist.org → profile → "Set up GitHub integration" / add the
+#      Packagist webhook). Then this workflow is a harmless belt-and-suspenders.
+#
+#   2. Fallback (secrets): set PACKAGIST_USERNAME + PACKAGIST_TOKEN repo secrets
+#      and this workflow notifies Packagist's API directly on every push.
+#
+# Either way the package stays current without a manual "Update" click.
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Packagist
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+          REPO_URL: https://github.com/flashmandu-org/flashmandu-app-sdk
+        run: |
+          set -e
+          if [ -z "${PACKAGIST_TOKEN}" ]; then
+            echo "::notice::PACKAGIST_TOKEN secret not set."
+            echo "::notice::Enable the Packagist GitHub webhook on this repo for no-secret auto-sync:"
+            echo "::notice::  packagist.org → profile → GitHub integration, OR repo → Settings → Webhooks → add Packagist service."
+            echo "::notice::Skipping API notify."
+            exit 0
+          fi
+
+          echo "Notifying Packagist for ${REPO_URL} (ref: ${GITHUB_REF})..."
+          curl -sf --retry 3 -XPOST -H 'content-type:application/json' \
+            "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_TOKEN}" \
+            -d "{\"repository\":{\"url\":\"${REPO_URL}\"}}"
+          echo "Done."
