@@ -57,7 +57,22 @@ it('composes admin UI from menu items', function (): void {
     expect($ui->menu)->toHaveCount(1)
         ->and($ui->menu[0]->label)->toBe('Settings')
         ->and($ui->menu[0]->route)->toBe('example-app.settings')
-        ->and($ui->menu[0]->icon)->toBe('cog');
+        ->and($ui->menu[0]->icon)->toBe('cog')
+        ->and($ui->menu[0]->children)->toBe([]);
+});
+
+it('nests sub-links under a menu item', function (): void {
+    $ui = new AdminUI(menu: [
+        new MenuItem(label: 'Loyalty', route: 'loyalty.dashboard', icon: 'star', children: [
+            new MenuItem(label: 'Members', route: 'loyalty.members.index', icon: 'users'),
+            new MenuItem(label: 'Rewards', route: 'loyalty.rewards.index', requiredScopes: [Scope::ReadOrders]),
+        ]),
+    ]);
+
+    expect($ui->menu[0]->children)->toHaveCount(2)
+        ->and($ui->menu[0]->children[0]->label)->toBe('Members')
+        ->and($ui->menu[0]->children[0]->route)->toBe('loyalty.members.index')
+        ->and($ui->menu[0]->children[1]->requiredScopes)->toBe([Scope::ReadOrders]);
 });
 
 it('composes storefront from section definitions', function (): void {
